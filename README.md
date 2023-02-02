@@ -1,1 +1,5 @@
-# todoProject
+# todoProject requirements
+
+-Tailwindcss
+-flowbite
+-autoAnimate
