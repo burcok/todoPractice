@@ -1,13 +1,13 @@
 <template>
-  <ul v-auto-animate class="bg-gray-600 rounded-xl p-10">
-    <div class="flex justify-between">
-      <span class="font-medium text-3xl">TODO</span>
+  <div v-auto-animate class="bg-gray-600 border-gray-700 shadow-2xl rounded-xl p-10">
+    <div class="flex justify-center flex-wrap md:justify-between">
+      <span class="font-bold text-3xl mx-10">TODO</span>
 
       <!-- Modal toggle -->
       <button
         data-modal-target="authentication-modal"
         data-modal-toggle="authentication-modal"
-        class="block text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        class="block shadow-xl text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-600 font-medium rounded-lg text-sm mt-7 md:mt-0 px-5 py-2 md:px-5 md:py-2.5 text-center"
         type="button"
       >
         Yeni TODO Ekle
@@ -44,14 +44,16 @@
               <span class="sr-only">Close modal</span>
             </button>
             <div class="px-6 py-6 lg:px-8">
-              <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">
+              <h3
+                class="unselectable mb-4 text-xl font-medium text-gray-900 dark:text-white"
+              >
                 Yeni bir TODO ekle
               </h3>
-              <form @submit.prevent="createTask" class="space-y-6" action="#">
+              <form @submit.prevent="createTask" name="createTaskForm" class="space-y-6">
                 <div>
                   <label
-                    for="email"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    for="title"
+                    class="unselectable block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >Başlık</label
                   >
                   <input
@@ -67,7 +69,7 @@
                 <div>
                   <label
                     for="description"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    class="unselectable block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >Açıklama</label
                   >
                   <input
@@ -92,7 +94,7 @@
                   </div>
                   <label
                     for="remember"
-                    class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    class="unselectable ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                     >Tamamlandı</label
                   >
                 </div>
@@ -109,37 +111,47 @@
         </div>
       </div>
     </div>
-    <li class="mt-6" v-for="task in tasks" :id="'listItem' + task.id">
-      <div class="flex items-center">
-        <input
-          type="checkbox"
-          :id="'task' + task.id"
-          v-model="task.done"
-          @change="updateTaskStatus(task)"
-          class="appearance-none h-4 w-4 border rounded-sm bg-white text-black checked:bg-green-600 checked:border-green-600 outline-none duration-500 mr-2"
-        />
-        <label class="unselectable font-semibold text-lg mr-3" :for="'task' + task.id">
-          {{ task.title }}
-        </label>
-        <label class="unselectable text-gray-900" :for="'task' + task.id">
-          {{ task.description }}
-        </label>
-      </div>
-      <hr class="border-gray-700 mt-1 mb-2" />
-      <button
-        class="duration-500 bg-cyan-900 hover:bg-cyan-700 px-3 font-semibold rounded-md mx-2"
-        @click=""
+    <ul v-auto-animate id="todoList">
+      <li
+        class="duration-700 border-gray-600/60 even:border-gray-700/90 even:bg-gray-700/50 rounded-md p-8 md:p-3 mt-6"
+        v-for="task in tasks"
       >
-        Düzenle
-      </button>
-      <button
-        class="duration-500 bg-red-900 hover:bg-red-600 px-3 font-semibold rounded-md mx-2"
-        @click="deleteTask(task)"
-      >
-        Sil
-      </button>
-    </li>
-  </ul>
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            :id="'listItem' + task.id"
+            v-model="task.done"
+            @change="updateTaskStatus(task)"
+            class="appearance-none h-4 w-4 border rounded-sm bg-white text-black checked:bg-green-600 checked:border-green-600 outline-none duration-500 mr-2"
+          />
+          <div class="flex flex-wrap md:inline-block">
+            <label
+              class="unselectable font-semibold text-lg mr-3"
+              :for="'listItem' + task.id"
+            >
+              {{ task.title }}
+            </label>
+            <label class="unselectable text-gray-900" :for="'listItem' + task.id">
+              {{ task.description }}
+            </label>
+          </div>
+        </div>
+        <hr class="border-gray-700 mt-1 mb-2" />
+        <button
+          class="duration-500 w-full md:w-20 bg-cyan-900 hover:bg-cyan-700 px-3 font-semibold rounded-md my-3 md:my-0 md:mx-2"
+          @click=""
+        >
+          Düzenle
+        </button>
+        <button
+          class="duration-500 w-full md:w-20 bg-red-900 hover:bg-red-600 px-3 font-semibold rounded-md md:mx-2"
+          @click="deleteTask(task)"
+        >
+          Sil
+        </button>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -157,48 +169,74 @@ export default {
       try {
         const response = await axios.get("http://localhost:5000/tasks");
         tasks.value = response.data.tasks;
-        console.log(tasks.value);
       } catch (error) {
         console.error(error);
-        setInterval(fetchTasks, 5000);
+        setTimeout(fetchTasks, 10000);
+      }
+    };
+
+    const updateTasks = async () => {
+      await fetchTasks();
+      let todoList = document.querySelector("#todoList").children;
+      for (let i = 0; todoList.length > i; i++) {
+        let checkTaskCheckbox = todoList[i];
+        let checkTask = tasks.value[i].done;
+        if (checkTask == true) {
+          checkTaskCheckbox.classList.add("shadow-none");
+          checkTaskCheckbox.classList.remove("shadow-md");
+        } else {
+          checkTaskCheckbox.classList.add("shadow-md");
+          checkTaskCheckbox.classList.remove("shadow-none");
+        }
       }
     };
 
     const updateTaskStatus = async (task) => {
       try {
         await axios.put(`http://localhost:5000/tasks/${task.id}`, { done: task.done });
-        setTimeout(null, 200);
+        updateTasks();
       } catch (error) {
         console.error(error);
       }
+      updateTasks;
     };
 
     const deleteTask = async (task) => {
       try {
-        await axios.delete(`http://localhost:5000/tasks/${task.id}`).then((response) => {
-          document.querySelector("#listItem" + response.data.id).remove();
-        });
-        setTimeout(null, 500);
+        await axios.delete(`http://localhost:5000/tasks/${task.id}`);
+        updateTasks();
+        // checkAndDeleteTask(task);
       } catch (error) {
         console.error(error);
       }
     };
 
+    // const checkAndDeleteTask = async (task) => {
+    //   const taskItem = [...document.querySelectorAll("li")];
+    //   for (let i = 0; taskItem.length > i; i++) {
+    //     if (taskItem[i].id == "listItem" + task.id) {
+    //       taskItem[i].remove();
+    //     }
+    //   }
+    // };
+
     const createTask = async () => {
       try {
-        console.log(title.value, description.value, done.value);
         await axios.post("http://localhost:5000/tasks", {
           title: title.value,
           description: description.value,
           done: done.value,
         });
-        setTimeout(fetchTasks, 500);
+        updateTasks();
       } catch (error) {
         console.error(error);
       }
+      description.value = "";
+      title.value = "";
+      done.value = false;
     };
 
-    fetchTasks();
+    updateTasks();
 
     return {
       tasks,

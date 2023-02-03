@@ -1,12 +1,10 @@
 <template>
   <div class="bg-gray-800">
-    <div style="min-height: 100vh" class="bg-gray-800 py-20 px-64 w-screen">
-      <Suspense>
-        <template #default>
-          <taskList />
-        </template>
-        <template #fallback> Loading... </template>
-      </Suspense>
+    <div
+      style="min-height: 100vh"
+      class="bg-gray-800 py-20 px-16 sm:px-32 lg:px-64 w-screen"
+    >
+      <taskList />
     </div>
   </div>
 </template>
@@ -19,6 +17,12 @@ export default {
   },
 };
 </script>
+<!--  
+
+  TODO: Düzenle kısmı yapılacak
+  TODO: Sildikten sonraki animasyon düzelicek
+
+-->
 
 <style>
 .unselectable {
