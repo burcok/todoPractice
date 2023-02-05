@@ -3,3 +3,4 @@
 -Tailwindcss
 -flowbite
 -autoAnimate
+-flask
